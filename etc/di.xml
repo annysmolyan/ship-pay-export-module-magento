@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the GNU General Public License v3 (GPL 3.0)
+ * It is also available through the world-wide-web at this URL:
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * @author https://github.com/annysmolyan
+ * @category BelSmol
+ * @package BelSmol_ShipPayExport
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GNU General Public License v3 (GPL 3.0)
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Service Contracts -->
+    <preference for="BelSmol\ShipPayExport\Api\PaymentMethodListExportInterface"
+                type="BelSmol\ShipPayExport\Model\Export\PaymentMethodList"/>
+
+    <preference for="BelSmol\ShipPayExport\Api\ShippingMethodListExportInterface"
+                type="BelSmol\ShipPayExport\Model\Export\ShippingMethodList"/>
+    <!-- END: Service Contracts-->
+
+    <!-- Custom Command Registration -->
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="export_payment_methods" xsi:type="object">BelSmol\ShipPayExport\Console\Command\ExportPaymentMethods</item>
+                <item name="export_shipping_methods" xsi:type="object">BelSmol\ShipPayExport\Console\Command\ExportShippingMethodList</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- END: Payment Method Export Command -->
+
+    <!-- Determine realization for interface BelSmol\ShipPayExport\Api\FileEditorInterface-->
+    <virtualType name="paymentMethodListVirtualType" type="BelSmol\ShipPayExport\Model\Export\PaymentMethodList">
+        <arguments>
+            <argument name="fileEditor" xsi:type="object">BelSmol\ShipPayExport\Model\CsvFileEditor</argument>
+        </arguments>
+    </virtualType>
+    <type name="BelSmol\ShipPayExport\Console\Command\ExportPaymentMethods">
+        <arguments>
+            <argument name="exportModel" xsi:type="object">paymentMethodListVirtualType</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="shippingMethodListVirtualType" type="BelSmol\ShipPayExport\Model\Export\ShippingMethodList">
+        <arguments>
+            <argument name="fileEditor" xsi:type="object">BelSmol\ShipPayExport\Model\CsvFileEditor</argument>
+        </arguments>
+    </virtualType>
+    <type name="BelSmol\ShipPayExport\Console\Command\ExportShippingMethodList">
+        <arguments>
+            <argument name="exportModel" xsi:type="object">shippingMethodListVirtualType</argument>
+        </arguments>
+    </type>
+    <!-- END: Determine realization for interface BelSmol\ShipPayExport\Api\FileEditorInterface-->
+</config>
